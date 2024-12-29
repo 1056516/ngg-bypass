@@ -229,7 +229,7 @@
   <div class="search-title">ORBIT
     <img src="https://www.publicdomainpictures.net/pictures/620000/nahled/colorful-cartoon-astronaut-1718398814ff2.png" alt="Astronaut" class="astronaut">
   </div>
-
+  
   <div class="center-left">
     <div class="game-app-icon" onclick="window.location.href='https://playervpn.github.io/playervpn-games'">
       <i class="fas fa-gamepad"></i>
@@ -278,25 +278,15 @@
     const quickLinks = document.getElementById('quick-links');
     const searchBar = document.getElementById('search-query');
 
-    // Validate URL
-    function isValidUrl(string) {
-      try {
-        new URL(string);
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
-
     // Show modal
     addIcon.addEventListener('click', () => {
       modal.style.display = 'flex';
     });
 
-    // Enable add button when inputs are valid
+    // Enable add button when inputs are filled
     [urlInput, titleInput].forEach(input => {
       input.addEventListener('input', () => {
-        addButton.style.display = urlInput.value && titleInput.value && isValidUrl(urlInput.value) ? 'inline-block' : 'none';
+        addButton.style.display = urlInput.value && titleInput.value ? 'inline-block' : 'none';
       });
     });
 
@@ -364,11 +354,7 @@
       if (e.key === 'Enter') {
         const query = searchBar.value;
         if (query.trim() !== '') {
-          if (isValidUrl(query)) {
-            window.location.href = `/static/embed.html#${query}`;
-          } else {
-            window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-          }
+          window.location.href = `/static/embed.html#https://${query}`;
         }
       }
     });
