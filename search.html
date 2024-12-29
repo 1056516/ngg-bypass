@@ -190,12 +190,55 @@
     .add-button:enabled {
       display: inline-block;
     }
+
+    .center-left {
+      position: absolute;
+      left: 10%;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .game-app-icon {
+      width: 120px;
+      height: 120px;
+      background: #8000ff;
+      border-radius: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+      box-shadow: 0 0 20px #8000ff;
+    }
+
+    .game-app-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .game-app-icon i {
+      color: white;
+      font-size: 3rem;
+    }
   </style>
 </head>
 <body>
   <div class="search-title">ORBIT
     <img src="https://www.publicdomainpictures.net/pictures/620000/nahled/colorful-cartoon-astronaut-1718398814ff2.png" alt="Astronaut" class="astronaut">
   </div>
+  
+  <div class="center-left">
+    <div class="game-app-icon" onclick="window.location.href='https://playervpn.github.io/playervpn-games'">
+      <i class="fas fa-gamepad"></i>
+    </div>
+    <div class="game-app-icon" onclick="window.location.href='https://orbit-ngg.onrender.com'">
+      <i class="fas fa-th-large"></i>
+    </div>
+  </div>
+
   <div class="search-bar-container">
     <i class="fas fa-search search-icon"></i>
     <input type="text" id="search-query" class="search-bar" placeholder="Search">
