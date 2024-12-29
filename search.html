@@ -78,6 +78,7 @@
       justify-content: center;
       margin-top: 40px;
       gap: 20px;
+      flex-wrap: wrap;
     }
 
     .quick-link {
@@ -106,6 +107,95 @@
       width: 40px;
       height: 40px;
       margin-bottom: 10px;
+      image-rendering: crisp-edges;
+    }
+
+    .add-icon {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px #007bff;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      transition: transform 0.3s;
+    }
+
+    .add-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #001f3f, #007bff);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 80%;
+      max-width: 400px;
+      color: white;
+      box-shadow: 0 0 25px #007bff;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #007bff;
+    }
+
+    .modal input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      outline: none;
+    }
+
+    .modal input::placeholder {
+      color: #ccc;
+    }
+
+    .add-button {
+      display: none;
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 0 15px #28a745;
+      transition: transform 0.3s;
+    }
+
+    .add-button:enabled {
+      display: inline-block;
+    }
+
+    .add-button:hover {
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -117,7 +207,7 @@
     <i class="fas fa-search search-icon"></i>
     <input type="text" id="search-query" class="search-bar" placeholder="Search">
   </div>
-  <div class="quick-links">
+  <div class="quick-links" id="quick-links">
     <div class="quick-link" onclick="window.location.href='/static/embed.html#https://now.gg'">
       <img src="https://now.gg/favicon.ico" alt="Nowgg Icon" class="quick-link-icon">
       Now.gg
@@ -132,11 +222,88 @@
     </div>
   </div>
 
+  <button class="add-icon" id="add-icon"><i class="fas fa-plus"></i></button>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2>Add Shortcut</h2>
+      <input type="text" id="url-input" placeholder="Enter URL">
+      <input type="text" id="title-input" placeholder="Enter Title">
+      <button class="add-button" id="add-button">Add</button>
+    </div>
+  </div>
+
   <script>
-    document.querySelector('.search-bar').addEventListener('keypress', function(e) {
+    const addIcon = document.getElementById('add-icon');
+    const modal = document.getElementById('modal');
+    const addButton = document.getElementById('add-button');
+    const urlInput = document.getElementById('url-input');
+    const titleInput = document.getElementById('title-input');
+    const quickLinks = document.getElementById('quick-links');
+    const searchBar = document.getElementById('search-query');
+
+    // Show modal
+    addIcon.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+
+    // Enable add button when inputs are filled
+    [urlInput, titleInput].forEach(input => {
+      input.addEventListener('input', () => {
+        addButton.style.display = urlInput.value && titleInput.value ? 'inline-block' : 'none';
+      });
+    });
+
+    // Add shortcut
+    addButton.addEventListener('click', () => {
+      const url = urlInput.value;
+      const title = titleInput.value;
+
+      const shortcut = { url, title };
+      const shortcuts = JSON.parse(localStorage.getItem('shortcuts')) || [];
+      shortcuts.push(shortcut);
+      localStorage.setItem('shortcuts', JSON.stringify(shortcuts));
+
+      addShortcutToUI(shortcut);
+
+      modal.style.display = 'none';
+      urlInput.value = '';
+      titleInput.value = '';
+      addButton.style.display = 'none';
+    });
+
+    // Populate shortcuts on load
+    window.onload = () => {
+      const shortcuts = JSON.parse(localStorage.getItem('shortcuts')) || [];
+      shortcuts.forEach(addShortcutToUI);
+    };
+
+    // Add shortcut to UI
+    function addShortcutToUI(shortcut) {
+      const link = document.createElement('div');
+      link.className = 'quick-link';
+      link.innerHTML = `
+        <img src="https://www.google.com/s2/favicons?domain=${new URL(shortcut.url).hostname}" alt="Icon" class="quick-link-icon">
+        ${shortcut.title}
+      `;
+      link.onclick = () => window.location.href = `/static/embed.html#${shortcut.url}`;
+      quickLinks.appendChild(link);
+    }
+
+    // Close modal when clicking outside content
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // Perform search on Enter key
+    searchBar.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
-        const query = document.getElementById('search-query').value;
-        window.location.href = `/static/embed.html#https://${query}`;
+        const query = searchBar.value;
+        if (query.trim() !== '') {
+          window.location.href = `/static/embed.html#https://${query}`;
+        }
       }
     });
   </script>
