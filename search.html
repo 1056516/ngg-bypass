@@ -97,6 +97,7 @@
       box-shadow: 0 0 15px #8000ff;
       cursor: pointer;
       transition: transform 0.3s;
+      position: relative;
     }
 
     .quick-link:hover {
@@ -108,6 +109,14 @@
       height: 40px;
       margin-bottom: 10px;
       image-rendering: crisp-edges;
+    }
+
+    .delete-icon {
+      position: absolute;
+      bottom: 10px;
+      color: red;
+      font-size: 1.5rem;
+      cursor: pointer;
     }
 
     .add-icon {
@@ -146,56 +155,40 @@
     }
 
     .modal-content {
-      background: linear-gradient(135deg, #001f3f, #007bff);
+      background: #001f3f;
+      color: #00d1ff;
       padding: 20px;
       border-radius: 10px;
       text-align: center;
       width: 80%;
       max-width: 400px;
-      color: white;
-      box-shadow: 0 0 25px #007bff;
-    }
-
-    .modal-content h2 {
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #007bff;
+      box-shadow: 0 0 20px #00d1ff;
     }
 
     .modal input {
       width: 90%;
       padding: 10px;
       margin: 10px 0;
-      border: none;
+      border: 1px solid #00d1ff;
       border-radius: 5px;
       font-size: 1rem;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      outline: none;
-    }
-
-    .modal input::placeholder {
-      color: #ccc;
+      background: transparent;
+      color: #00d1ff;
     }
 
     .add-button {
       display: none;
-      background: #28a745;
+      background: #00d1ff;
       color: white;
       padding: 10px 20px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 1rem;
-      box-shadow: 0 0 15px #28a745;
-      transition: transform 0.3s;
     }
 
     .add-button:enabled {
       display: inline-block;
-    }
-
-    .add-button:hover {
-      transform: scale(1.1);
     }
   </style>
 </head>
@@ -285,9 +278,25 @@
       link.innerHTML = `
         <img src="https://www.google.com/s2/favicons?domain=${new URL(shortcut.url).hostname}" alt="Icon" class="quick-link-icon">
         ${shortcut.title}
+        <i class="fas fa-trash delete-icon" onclick="deleteShortcut(event, '${shortcut.title}')"></i>
       `;
-      link.onclick = () => window.location.href = `/static/embed.html#${shortcut.url}`;
+      link.onclick = (e) => {
+        if (!e.target.classList.contains('delete-icon')) {
+          window.location.href = `/static/embed.html#${shortcut.url}`;
+        }
+      };
       quickLinks.appendChild(link);
+    }
+
+    // Delete shortcut
+    function deleteShortcut(event, title) {
+      event.stopPropagation();
+      const shortcuts = JSON.parse(localStorage.getItem('shortcuts')) || [];
+      const updatedShortcuts = shortcuts.filter(shortcut => shortcut.title !== title);
+      localStorage.setItem('shortcuts', JSON.stringify(updatedShortcuts));
+
+      const link = event.target.closest('.quick-link');
+      link.remove();
     }
 
     // Close modal when clicking outside content
