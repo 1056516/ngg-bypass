@@ -350,11 +350,19 @@
     });
 
     // Perform search on Enter key
-    searchBar.addEventListener('keypress', function(e) {
+    searchBar.addEventListener('keypress', function (e) {
       if (e.key === 'Enter') {
-        const query = searchBar.value;
-        if (query.trim() !== '') {
-          window.location.href = `/static/embed.html#https://${query}`;
+        const query = searchBar.value.trim();
+        if (query !== '') {
+          // Check if input is a valid URL
+          try {
+            new URL(query); // Attempt to parse input as a URL
+            window.location.href = `/static/embed.html#https://${query}`;
+          } catch {
+            // If not a valid URL, treat as a search query
+            const searchQuery = encodeURIComponent(query); // Encode query for URL safety
+            window.location.href = `/static/embed.html#https://www.bing.com/search?q=${searchQuery}`;
+          }
         }
       }
     });
